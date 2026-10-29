@@ -1,21 +1,15 @@
-# Menjalankan proyek di Google Colab
+# Menjalankan proyek di Google Colab langsung dari Kaggle
 
-Versi ini tetap memakai satu repository GitHub yang sama dengan versi lokal. Perbedaannya hanya pada proses setup lingkungan dan lokasi penyimpanan data.
+Versi Colab mengunduh dataset langsung dari Kaggle ke penyimpanan sementara runtime. Dataset tidak perlu diunggah ke Google Drive.
 
 ## Persiapan satu kali
 
-1. Upload seluruh folder `Synthetic Retail Dataset - 10 Million Transactions` ke Google Drive.
-2. Pastikan struktur akhirnya seperti berikut:
-
-```text
-MyDrive/
-└── Synthetic Retail Dataset - 10 Million Transactions/
-    ├── retail_clean_dataset/
-    └── retail_contaminated_dataset/
-```
-
-3. Publish repository ini ke GitHub.
-4. Di masing-masing notebook Colab, ganti:
+1. Masuk ke akun Kaggle dan buka `https://www.kaggle.com/settings/api`.
+2. Pada bagian API, buat token baru.
+3. Di Google Colab, buka panel **Secrets** dengan ikon kunci.
+4. Tambahkan secret bernama `KAGGLE_API_TOKEN`, masukkan token Kaggle sebagai nilainya, lalu aktifkan akses untuk notebook.
+5. Publish repository proyek ke GitHub.
+6. Pada sel setup setiap notebook, ganti:
 
 ```python
 REPOSITORY_URL = "https://github.com/USERNAME/big-data-retail-analytics.git"
@@ -23,28 +17,31 @@ REPOSITORY_URL = "https://github.com/USERNAME/big-data-retail-analytics.git"
 
 dengan URL repository milikmu.
 
+Jangan menulis token langsung di dalam notebook dan jangan memasukkannya ke GitHub.
+
+## Cara kerja download
+
+Notebook menggunakan:
+
+```python
+kagglehub.dataset_download(
+    "mrayyanshehzad/synthetic-retail-dataset-10-million-transactions"
+)
+```
+
+KaggleHub mengunduh dataset ke cache sementara Colab, bukan ke Google Drive. PySpark kemudian membaca CSV dari folder hasil download tersebut.
+
 ## Urutan menjalankan
 
 1. `01_exploration.ipynb`
 2. `02_pyspark_transform.ipynb`
 3. `03_etl_validation.ipynb`
 
-Notebook 02 menghasilkan data Parquet dan tabel agregat. Notebook 03 membaca hasil tersebut untuk validasi dan pembuatan grafik, sehingga Notebook 02 harus selesai terlebih dahulu.
+Notebook 02 menghasilkan Parquet dan tabel agregat di `/content/big-data-retail-analytics/output`. Notebook 03 akan memakai hasil tersebut jika masih tersedia. Jika runtime baru tidak mempunyai hasil Notebook 02, Notebook 03 akan menjalankan pipeline ETL secara otomatis.
 
-Hasil Colab disimpan di:
+## Konsekuensi tidak memakai Google Drive
 
-```text
-MyDrive/big-data-retail-analytics-output/
-```
-
-Folder tersebut berisi hasil Parquet, tabel validasi, dan grafik. Penyimpanan di Google Drive membuat hasil tetap tersedia walaupun runtime Colab terputus.
-
-## Jika folder dataset berbeda
-
-Ubah nilai berikut pada sel setup notebook:
-
-```python
-COLAB_DATASET_ROOT = "/content/drive/MyDrive/nama-folder-dataset"
-```
-
-Jangan memasukkan token Kaggle, password database, atau file `.env` ke notebook maupun GitHub.
+- Dataset dan output hanya tersedia selama runtime Colab masih aktif.
+- Setelah runtime di-reset atau terputus, dataset harus diunduh kembali.
+- Grafik atau hasil yang ingin disimpan permanen harus diunduh ke komputer sebelum runtime berakhir.
+- Dataset tetap diunduh ke VM Colab terlebih dahulu; proses ini bukan streaming langsung dari halaman Kaggle ke PySpark.

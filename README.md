@@ -92,13 +92,13 @@ Sesuaikan `DATASET_ROOT` di `.env` jika folder dataset berada di lokasi lain.
 
 ## Persiapan Google Colab
 
-1. Upload folder `Synthetic Retail Dataset - 10 Million Transactions` ke `MyDrive`.
-2. Buka notebook dari folder `notebooks/colab/` melalui GitHub.
-3. Ganti `REPOSITORY_URL` pada sel setup dengan URL repository GitHub milikmu.
-4. Jika lokasi dataset di Drive berbeda, ganti nilai `COLAB_DATASET_ROOT`.
+1. Buat API token melalui halaman pengaturan Kaggle.
+2. Simpan token sebagai Colab Secret bernama `KAGGLE_API_TOKEN` dan aktifkan akses notebook.
+3. Buka notebook dari folder `notebooks/colab/` melalui GitHub.
+4. Ganti `REPOSITORY_URL` pada sel setup dengan URL repository GitHub milikmu.
 5. Jalankan notebook secara berurutan dari nomor 01 sampai 03.
 
-Notebook Colab memasang dependensi, melakukan mount Google Drive, dan menyimpan hasil secara permanen ke `MyDrive/big-data-retail-analytics-output`. Panduan lengkap tersedia di [`notebooks/colab/README.md`](notebooks/colab/README.md).
+Dataset diunduh langsung dari Kaggle ke penyimpanan sementara `/content`; Google Drive tidak diperlukan. Data dan output akan hilang ketika runtime Colab berakhir. Panduan lengkap tersedia di [`notebooks/colab/README.md`](notebooks/colab/README.md).
 
 ## Urutan pengerjaan
 
